@@ -37,10 +37,10 @@ public class ComparerTests
     public async Task InstanceOverride_with_message()
     {
         var settings = new VerifySettings();
-        settings.UseStringComparer(CompareWithMessage);
+        settings.UseStringComparer(CompareWithOtherMessage);
         settings.DisableDiff();
         var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", "staticComparerExtMessage", settings));
-        Assert.Contains("theMessage", exception.Message);
+        Assert.Contains("otherMessage", exception.Message);
     }
 
     [Fact]
@@ -57,8 +57,8 @@ public class ComparerTests
     {
         var settings = new VerifySettings();
         settings.DisableDiff();
-        var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", "staticComparerExtMessage", settings).UseStringComparer(CompareWithMessage));
-        Assert.Contains("theMessage", exception.Message);
+        var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", "staticComparerExtMessage", settings).UseStringComparer(CompareWithOtherMessage));
+        Assert.Contains("otherMessage", exception.Message);
     }
 
     [ModuleInitializer]
