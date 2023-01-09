@@ -11,6 +11,16 @@ public class ComparerTests
         await Verify("thetext", settings);
     }
 
+    [Fact]
+    public async Task InstanceOverride()
+    {
+        var settings = new VerifySettings();
+        settings.UseStringComparer(Compare);
+        await Verify("TheText", "staticComparerExtMessage", settings);
+        PrefixUnique.Clear();
+        await Verify("thetext", "staticComparerExtMessage", settings);
+    }
+
 #if NET7_0_OR_GREATER
 
     [Fact]
@@ -24,11 +34,30 @@ public class ComparerTests
     }
 
     [Fact]
+    public async Task InstanceOverride_with_message()
+    {
+        var settings = new VerifySettings();
+        settings.UseStringComparer(CompareWithMessage);
+        settings.DisableDiff();
+        var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", "staticComparerExtMessage", settings));
+        Assert.Contains("theMessage", exception.Message);
+    }
+
+    [Fact]
     public async Task Instance_with_message_Fluent()
     {
         var settings = new VerifySettings();
         settings.DisableDiff();
         var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", settings).UseStringComparer(CompareWithMessage));
+        Assert.Contains("theMessage", exception.Message);
+    }
+
+    [Fact]
+    public async Task InstanceOverride_with_message_Fluent()
+    {
+        var settings = new VerifySettings();
+        settings.DisableDiff();
+        var exception = await Assert.ThrowsAsync<VerifyException>(() => Verify("NotTheText", "staticComparerExtMessage", settings).UseStringComparer(CompareWithMessage));
         Assert.Contains("theMessage", exception.Message);
     }
 
@@ -50,6 +79,9 @@ public class ComparerTests
 
     static Task<CompareResult> CompareWithMessage(string stream, string received, IReadOnlyDictionary<string, object> readOnlyDictionary) =>
         Task.FromResult(CompareResult.NotEqual("theMessage"));
+
+    static Task<CompareResult> CompareWithOtherMessage(string stream, string received, IReadOnlyDictionary<string, object> readOnlyDictionary) =>
+        Task.FromResult(CompareResult.NotEqual("otherMessage"));
 
 #endif
 
