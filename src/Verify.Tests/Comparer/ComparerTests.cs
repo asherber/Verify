@@ -11,6 +11,8 @@ public class ComparerTests
         await Verify("thetext", settings);
     }
 
+#if NET7_0_OR_GREATER
+
     [Fact]
     public async Task InstanceOverride()
     {
@@ -20,8 +22,6 @@ public class ComparerTests
         PrefixUnique.Clear();
         await Verify("thetext", "staticComparerExtMessage", settings);
     }
-
-#if NET7_0_OR_GREATER
 
     [Fact]
     public async Task Instance_with_message()
